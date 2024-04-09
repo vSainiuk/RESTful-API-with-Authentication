@@ -11,9 +11,15 @@ class Task {
     }
   }
 
-  static async getUserTasks(userId) {
+  static async getUserTasks(userId, page, limit, sortField, sortOrder) {
     try {
-      const tasks = await prisma.task.findMany({ where: { userId } });
+      const tasks = await prisma.task.findMany({ 
+        where: { userId },
+        orderBy: { [sortField]: sortOrder },
+        skip: (page - 1) * limit,
+        take: limit 
+      });
+
       return tasks;
     } catch (error) {
       throw new Error('Error fetching user tasks: ' + error.message);

@@ -19,6 +19,16 @@ class User {
       throw new Error('Error fetching user by email: ' + error.message);
     }
   }
+
+  static async getUsers() {
+    try {
+      const users = await prisma.user.findMany();
+
+      return users;
+    } catch (error) {
+      throw new Error('Error fetching users: ' + error.message);
+    }
+  }
 }
 
 module.exports = User;

@@ -19,6 +19,7 @@ async function register(req, res) {
 async function login(req, res) {
   try {
     const { email, password } = req.body;
+
     const user = await User.getUserByEmail(email);
     if (!user) return res.status(404).json({ error: 'User not found.' });
 
@@ -32,4 +33,15 @@ async function login(req, res) {
   }
 }
 
-module.exports = { register, login };
+async function getUsers(req, res) {
+  try {
+    const users = await User.getUsers();
+
+    res.json({ users });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+
+module.exports = { register, login, getUsers };

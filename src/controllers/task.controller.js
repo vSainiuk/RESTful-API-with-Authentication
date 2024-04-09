@@ -2,6 +2,10 @@ const Task = require('../models/task.model');
 
 async function createTask(req, res) {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Access is denied. Administrator role required' });
+    }
+
     const { title, description } = req.body;
 
     const userId = req.user.id;
@@ -16,7 +20,8 @@ async function createTask(req, res) {
 async function getUserTasks(req, res) {
   try {
     const userId = req.user.id;
-    const tasks = await Task.getUserTasks(userId);
+    const { page = 1, limit = 10, sortField = 'createdAt', sortOrder = 'desc' } = req.query;
+    const tasks = await Task.getUserTasks(userId, page, limit, sortField, sortOrder);
 
     res.json(tasks);
   } catch (error) {
@@ -37,6 +42,10 @@ async function getTaskById(req, res) {
 
 async function updateTask(req, res) {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Access is denied. Administrator role required' });
+    }
+
     const taskId = req.params.id;
     const newData = req.body;
     const isUpdated = await Task.updateTask(taskId, newData);
@@ -53,6 +62,10 @@ async function updateTask(req, res) {
 
 async function deleteTask(req, res) {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Access is denied. Administrator role required' });
+    }
+
     const taskId = req.params.id;
     const isDeleted = await Task.deleteTask(taskId);
 
