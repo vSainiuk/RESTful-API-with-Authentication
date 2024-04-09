@@ -8,9 +8,9 @@ async function register(req, res) {
     const { username, email, password, role } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const userId = await User.createUser({ username, email, password: hashedPassword, role });
+    const user = await User.createUser({ username, email, password: hashedPassword, role });
 
-    res.status(201).json({ userId });
+    res.status(201).json({ user });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -20,13 +20,17 @@ async function login(req, res) {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required.' })
+    };
+
     const user = await User.getUserByEmail(email);
     if (!user) return res.status(404).json({ error: 'User not found.' });
 
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) return res.status(401).json({ error: 'Invalid password.' });
 
-    const token = jwt.sign({ id: user.id, email: user.email }, jwtConfig.secret, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, jwtConfig.secret, { expiresIn: '1h' });
     res.json({ token });
   } catch (error) {
     res.status(500).json({ error: error.message });

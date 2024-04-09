@@ -10,5 +10,20 @@ async function getUsers(req, res) {
   }
 }
 
+async function getUserById(req, res) {
+  try {
+    const userId = +req.params.id;
+    const user = await User.getUserById(userId);
 
-module.exports = { getUsers };
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+
+module.exports = { getUsers, getUserById };
