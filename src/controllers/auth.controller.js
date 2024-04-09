@@ -5,10 +5,10 @@ const User = require('../models/user.model');
 
 async function register(req, res) {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, role } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const userId = await User.createUser({ username, email, password: hashedPassword });
+    const userId = await User.createUser({ username, email, password: hashedPassword, role });
 
     res.status(201).json({ userId });
   } catch (error) {
