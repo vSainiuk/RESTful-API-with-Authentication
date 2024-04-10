@@ -52,6 +52,8 @@ It will be used to authenticate and authorize the user when accessing secure end
  - Install all dependencies using `npm install`.
  - Start the server using `npm start`.
 
+ Then you can make various requests on the specified endpoints.
+
 # API documentation can be found at http://localhost:3000/api-docs. TODO: write docs
 
 # Contact
