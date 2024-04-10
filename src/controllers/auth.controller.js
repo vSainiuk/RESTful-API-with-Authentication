@@ -1,11 +1,16 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const validator = require('validator');
 const jwtConfig = require('../config/jwt.config');
 const User = require('../models/user.model');
 
 async function register(req, res) {
   try {
     const { username, email, password, role } = req.body;
+
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: 'Invalid email address' });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.createUser({ username, email, password: hashedPassword, role });
@@ -25,12 +30,16 @@ async function login(req, res) {
     };
 
     const user = await User.getUserByEmail(email);
-    if (!user) return res.status(404).json({ error: 'User not found.' });
+    if (!user) return res.status(404).json({ error: 'User not found.'});
 
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) return res.status(401).json({ error: 'Invalid password.' });
 
-    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, jwtConfig.secret, { expiresIn: '1h' });
+    const token = jwt.sign(
+    { id: user.id, email: user.email, role: user.role }, 
+    jwtConfig.secret, 
+    { expiresIn: '1h' });
+
     res.json({ token });
   } catch (error) {
     res.status(500).json({ error: error.message });

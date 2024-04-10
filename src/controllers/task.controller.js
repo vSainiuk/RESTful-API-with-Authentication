@@ -16,7 +16,13 @@ async function createTask(req, res) {
 async function getUserTasks(req, res) {
   try {
     const userId = req.user.id;
-    const { page = 1, limit = 10, sortField = 'createdAt', sortOrder = 'desc' } = req.query;
+    const { 
+      page = 1, 
+      limit = 10, 
+      sortField = 'createdAt', 
+      sortOrder = 'desc' 
+    } = req.query;
+
     const tasks = await Task.getUserTasks(userId, page, sortField, limit, sortOrder);
 
     res.json(tasks);

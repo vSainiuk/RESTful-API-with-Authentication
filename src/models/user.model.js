@@ -6,6 +6,10 @@ class User {
     try {
       return await prisma.user.create({ data: user });
     } catch (error) {
+      if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+        throw new Error('Email address is already in use');
+      }
+
       throw new Error('Error creating user: ' + error.message);
     }
   }
