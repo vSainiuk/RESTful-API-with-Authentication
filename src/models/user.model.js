@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 class User {
-  static async createUser(user) {
+  static async create(user) {
     try {
       return await prisma.user.create({ data: user });
     } catch (error) {
@@ -14,7 +14,7 @@ class User {
     }
   }
 
-  static async getUserByEmail(email) {
+  static async getByEmail(email) {
     try {
       return await prisma.user.findUnique({ where: { email } });
     } catch (error) {
@@ -22,7 +22,7 @@ class User {
     }
   }
 
-  static async getUsers() {
+  static async getAll() {
     try {
       const count = await prisma.user.count();
       const users =  await prisma.user.findMany();
@@ -33,7 +33,7 @@ class User {
     }
   }
 
-  static async getUserById(userId) {
+  static async getById(userId) {
     try {
       return await prisma.user.findUnique({ where: { id: userId } });
     } catch (error) {

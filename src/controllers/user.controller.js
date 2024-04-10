@@ -1,8 +1,9 @@
+const { throwNotFound } = require('../helpers/errorHelpers');
 const User = require('../models/user.model');
 
 async function getUsers(req, res) {
   try {
-    const users = await User.getUsers();
+    const users = await User.getAll();
 
     res.json({ users });
   } catch (error) {
@@ -13,10 +14,10 @@ async function getUsers(req, res) {
 async function getUserById(req, res) {
   try {
     const userId = +req.params.id;
-    const user = await User.getUserById(userId);
+    const user = await User.getById(userId);
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return throwNotFound(res, 'User not found');
     }
 
     res.json(user);

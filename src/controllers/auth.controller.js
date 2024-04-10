@@ -1,8 +1,12 @@
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const validator = require('validator');
 const jwtConfig = require('../config/jwt.config');
 const User = require('../models/user.model');
+const bcrypt = require('bcrypt');
+const { throwNotFound } = require('../helpers/errorHelpers');
+
+const bcryptRounds = 10;
+const expiresTokenIn = '1h';
 
 async function register(req, res) {
   try {
@@ -12,8 +16,8 @@ async function register(req, res) {
       return res.status(400).json({ error: 'Invalid email address' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.createUser({ username, email, password: hashedPassword, role });
+    const hashedPassword = await bcrypt.hash(password, bcryptRounds);
+    const user = await User.create({ username, email, password: hashedPassword, role });
 
     res.status(201).json({ user });
   } catch (error) {
@@ -29,8 +33,8 @@ async function login(req, res) {
       return res.status(400).json({ error: 'Email and password are required.' })
     };
 
-    const user = await User.getUserByEmail(email);
-    if (!user) return res.status(404).json({ error: 'User not found.'});
+    const user = await User.getByEmail(email);
+    if (!user) return throwNotFound(res, 'User not found');
 
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) return res.status(401).json({ error: 'Invalid password.' });
@@ -38,7 +42,7 @@ async function login(req, res) {
     const token = jwt.sign(
     { id: user.id, email: user.email, role: user.role }, 
     jwtConfig.secret, 
-    { expiresIn: '1h' });
+    { expiresIn: expiresTokenIn });
 
     res.json({ token });
   } catch (error) {

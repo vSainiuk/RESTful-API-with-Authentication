@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 class Task {
-  static async createTask(task) {
+  static async create(task) {
     try {
       return await prisma.task.create({ data: task });
     } catch (error) {
@@ -10,7 +10,7 @@ class Task {
     }
   }
 
-  static async getUserTasks(userId, page, sortField, limit, sortOrder) {
+  static async getAll(userId, page, sortField, limit, sortOrder) {
     try {
       const totalTasks = await prisma.task.count({ where: { userId } });
 
@@ -32,7 +32,7 @@ class Task {
     }
   }
 
-  static async getTaskById(userId, taskId) {
+  static async getById(userId, taskId) {
     try {
       return await prisma.task.findUnique({ where: { id: taskId, userId } });
     } catch (error) {
@@ -40,7 +40,7 @@ class Task {
     }
   }
 
-  static async updateTask(taskId, newData) {
+  static async update(taskId, newData) {
     try {
       return await prisma.task.update({ where: { id: taskId }, data: newData });
     } catch (error) {
@@ -48,7 +48,7 @@ class Task {
     }
   }
 
-  static async deleteTask(userId, taskId) {
+  static async remove(userId, taskId) {
     try {
       await prisma.task.delete({ where: { id: taskId, userId } });
       return true;
